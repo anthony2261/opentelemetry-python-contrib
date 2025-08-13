@@ -189,8 +189,12 @@ def _flatten_compound_value(
             flatten_functions=flatten_functions,
         )
     if hasattr(value, "model_dump"):
+        if isinstance(value, type) and hasattr(value, "model_json_schema"):
+            value_to_flatten = value.model_json_schema()
+        else:
+            value_to_flatten = value.model_dump()
         return _flatten_dict(
-            value.model_dump(),
+            value_to_flatten,
             key_prefix=key,
             exclude_keys=exclude_keys,
             rename_keys=rename_keys,
